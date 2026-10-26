@@ -1,0 +1,8 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel de resultados</title><link rel="stylesheet" href="style.css"></head>
+<body><main class="container wide"><header><p class="eyebrow">PAINEL DO APRESENTADOR</p><h1>Resultados da dinâmica</h1><p>Visão geral das respostas recebidas.</p></header>
+<section id="login" class="panel"><label for="password">Senha administrativa</label><input id="password" type="password" autocomplete="current-password"><button id="login-btn" class="button">Entrar</button><p id="login-status" class="muted"></p></section>
+<section id="dashboard" hidden>
+<div class="stats" id="stats"></div><div class="panel"><h2>Distribuição das respostas</h2><p class="muted">As respostas abaixo estão agregadas. Nenhuma condição experimental é identificada nesta tela.</p><div id="aggregate-charts"></div></div>
+<div class="panel reveal"><h2>Comparação detalhada</h2><p>Esta seção deve ser aberta somente depois da discussão dos resultados agregados.</p><button id="reveal" class="button">Revelar comparação entre condições</button><div id="split-results" hidden></div></div>
+</section><footer>Atualização automática quando o Realtime estiver habilitado no Supabase.</footer></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="admin.js"></script></body></html>
