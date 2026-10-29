@@ -1,6 +1,39 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gerar QR code</title><link rel="stylesheet" href="style.css"></head>
-<body><main class="container"><header><p class="eyebrow">PREPARAÇÃO DA DINÂMICA</p><h1>QR code de participação</h1><p>Depois de publicar o site, cole abaixo o endereço público da página inicial. O QR code não revela que existem versões diferentes.</p></header>
-<section class="panel"><label for="target">Endereço público da página inicial</label><input id="target" type="url" placeholder="https://seu-site.example/index.html"><button id="generate" class="button">Gerar QR code</button><div id="qr" class="qr-output"></div><p class="muted">Teste o QR code com um celular antes de projetá-lo.</p></section></main>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script>
-document.getElementById('generate').addEventListener('click',()=>{const value=document.getElementById('target').value.trim();const out=document.getElementById('qr');out.replaceChildren();if(!/^https?:\\/\\//i.test(value)){out.textContent='Insira um endereço público válido começando com https://';return;}new QRCode(out,{text:value,width:260,height:260,correctLevel:QRCode.CorrectLevel.M});});
-</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gerar QR code</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">PREPARAÇÃO DA DINÂMICA</p>
+      <h1>QR code de participação</h1>
+      <p>Depois de publicar o site, cole abaixo o endereço público da página inicial. O QR code não revela que existem
+        versões diferentes.</p>
+    </header>
+    <section class="panel"><label for="target">Endereço público da página inicial</label><input id="target" type="url"
+        placeholder="https://seu-site.example/index.html"><button id="generate" class="button">Gerar QR code</button>
+      <div id="qr" class="qr-output"></div>
+      <p class="muted">Teste o QR code com um celular antes de projetá-lo.</p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    document.getElementById('generate').addEventListener('click', () => {
+      const value = document.getElementById('target').value.trim();
+      const out = document.getElementById('qr');
+      out.replaceChildren();
+      // if (!/^https?:\\/\\//i.test(value)) {
+      //   out.textContent='Insira um endereço público válido começando com https://';
+      //   return;
+      // }
+      new QRCode(out,{text:value,width:260,height:260,correctLevel:QRCode.CorrectLevel.M});});
+  </script>
+</body>
+
+</html>
