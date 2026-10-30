@@ -1,20 +1,33 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Leitura e opinião</title><link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Leitura e opinião</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<main class="container">
-  <header><p class="eyebrow">DINÂMICA DO SEMINÁRIO</p><h1>Leitura e opinião</h1></header>
-  <section id="reading" class="panel" hidden>
-    <h2 id="text-title"></h2><div id="text-body"></div>
-    <p class="muted">Ao terminar a leitura, responda ao breve questionário.</p>
-    <a id="survey-link" class="button" href="survey.html">Responder ao questionário</a>
-  </section>
-  <section id="loading" class="panel"><p>Preparando o texto…</p></section>
-  <footer>Suas respostas não solicitam nome ou e-mail.</footer>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script><script src="content.js"></script><script src="app.js"></script>
-</body></html>
+  <main class="container">
+    <header>
+      <p class="eyebrow">DINÂMICA DO SEMINÁRIO</p>
+      <h1>Leitura e opinião</h1>
+    </header>
+    <section id="reading" class="panel" hidden>
+      <h2 id="text-title"></h2>
+      <div id="text-body"></div>
+      <p class="muted">Ao terminar a leitura, responda ao breve questionário.</p>
+      <a id="survey-link" class="button" href="survey.html">Responder ao questionário</a>
+    </section>
+    <section id="loading" class="panel">
+      <p>Carregando página...</p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="content.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

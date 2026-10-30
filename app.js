@@ -1,60 +1,50 @@
-(() => {
-  const cfg = window.APP_CONFIG;
-  const client = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
-  const sessionKey = 'experiment_session_id';
-  const conditionKey = 'experiment_condition_code';
+const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.APP_CONFIG;
 
-  function getSessionId() {
-    let id = sessionStorage.getItem(sessionKey);
-    if (!id) {
-      id = crypto.randomUUID
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      sessionStorage.setItem(sessionKey, id);
-    }
-    return id;
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+// Alterna entre as condições A e B.
+function assignCondition() {
+  const lastCondition = localStorage.getItem("lastCondition");
+
+  const condition = lastCondition === "A" ? "B" : "A";
+
+  localStorage.setItem("lastCondition", condition);
+
+  return condition;
+}
+
+// Recupera ou cria a sessão do participante.
+function getSession() {
+  let sessionId = localStorage.getItem("sessionId");
+  let condition = localStorage.getItem("condition");
+
+  // Cria uma nova sessão caso ainda não exista.
+  if (!sessionId || !condition) {
+    sessionId = crypto.randomUUID();
+    condition = assignCondition();
+
+    localStorage.setItem("sessionId", sessionId);
+    localStorage.setItem("condition", condition);
   }
 
-  function getCondition() {
-    let condition = sessionStorage.getItem(conditionKey);
-    if (!condition) {
-      condition = Math.random() < 0.5 ? 'A' : 'B';
-      sessionStorage.setItem(conditionKey, condition);
-    }
-    return condition;
-  }
+  return { sessionId, condition };
+}
 
-  function showError(message) {
-    const loading = document.getElementById('loading');
-    loading.textContent = message;
-  }
+// Obtém a sessão atual.
+const { sessionId, condition } = getSession();
 
-  function init() {
-    if (!cfg.SUPABASE_URL || cfg.SUPABASE_URL.includes('SEU-PROJETO') ||
-        !cfg.SUPABASE_ANON_KEY || cfg.SUPABASE_ANON_KEY.includes('SUA_CHAVE')) {
-      showError('O sistema ainda não foi configurado com as credenciais do Supabase.');
-      return;
-    }
+// Carrega o texto correspondente à condição atribuída.
+const textContainer = document.querySelector("#experiment-text");
 
-    getSessionId();
-    const condition = getCondition();
-    const text = condition === 'A'
-      ? EXPERIMENT_TEXTS.versionA
-      : EXPERIMENT_TEXTS.versionB;
+if (textContainer) {
+  textContainer.textContent = window.EXPERIMENT_CONTENT[condition];
+}
 
-    document.getElementById('text-title').textContent = text.title;
-    const body = document.getElementById('text-body');
-    body.replaceChildren();
-    text.paragraphs.forEach(paragraph => {
-      const element = document.createElement('p');
-      element.textContent = paragraph;
-      body.appendChild(element);
-    });
-
-    document.getElementById('survey-link').href = 'survey.html';
-    document.getElementById('loading').hidden = true;
-    document.getElementById('reading').hidden = false;
-  }
-
-  init();
-})();
+// Disponibiliza os dados da sessão para a página da pesquisa.
+window.EXPERIMENT_SESSION = {
+  sessionId,
+  condition
+};
