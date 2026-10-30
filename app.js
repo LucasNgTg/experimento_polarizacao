@@ -1,12 +1,9 @@
 (() => {
   const cfg = window.APP_CONFIG;
-  const client = supabase.createClient(
-    cfg.SUPABASE_URL,
-    cfg.SUPABASE_ANON_KEY
-  );
+  const client = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
-  const sessionKey = 'experiment_session_id';
-  const conditionKey = 'experiment_condition_code';
+  const sessionKey = "experiment_session_id";
+  const conditionKey = "experiment_condition_code";
 
   function getSessionId() {
     let id = sessionStorage.getItem(sessionKey);
@@ -26,18 +23,24 @@
     // Consulta o banco mesmo se já houver uma condição armazenada.
     // O Supabase retorna a condição previamente atribuída à sessão,
     // sem avançar a sequência.
-    const { data, error } = await client.rpc(
-      'assign_experiment_condition',
-      { p_session_id: sessionId }
-    );
+    const { data, error } = await client.rpc("assign_experiment_condition", {
+      p_session_id: sessionId,
+    });
 
     if (error) {
-      console.error('Erro ao atribuir condição:', error);
-      throw new Error('Não foi possível determinar a versão do texto.');
+      console.error("Erro ao atribuir condição:", error);
+
+      console.error("Detalhes do erro:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      throw new Error("Não foi possível determinar a versão do texto.");
     }
 
-    if (data !== 'A' && data !== 'B') {
-      throw new Error('O Supabase retornou uma condição inválida.');
+    if (data !== "A" && data !== "B") {
+      throw new Error("O Supabase retornou uma condição inválida.");
     }
 
     sessionStorage.setItem(conditionKey, data);
@@ -46,20 +49,18 @@
   }
 
   function showError(message) {
-    const loading = document.getElementById('loading');
+    const loading = document.getElementById("loading");
     loading.textContent = message;
   }
 
   async function init() {
     if (
       !cfg.SUPABASE_URL ||
-      cfg.SUPABASE_URL.includes('SEU-PROJETO') ||
+      cfg.SUPABASE_URL.includes("SEU-PROJETO") ||
       !cfg.SUPABASE_ANON_KEY ||
-      cfg.SUPABASE_ANON_KEY.includes('SUA_CHAVE')
+      cfg.SUPABASE_ANON_KEY.includes("SUA_CHAVE")
     ) {
-      showError(
-        'O sistema ainda não foi configurado com as credenciais do Supabase.'
-      );
+      showError("O sistema ainda não foi configurado com as credenciais do Supabase.");
       return;
     }
 
@@ -67,25 +68,23 @@
       const sessionId = getSessionId();
       const condition = await getCondition(sessionId);
 
-      const text = condition === 'A'
-        ? EXPERIMENT_TEXTS.versionA
-        : EXPERIMENT_TEXTS.versionB;
+      const text =
+        condition === "A" ? EXPERIMENT_TEXTS.versionA : EXPERIMENT_TEXTS.versionB;
 
-      document.getElementById('text-title').textContent = text.title;
+      document.getElementById("text-title").textContent = text.title;
 
-      const body = document.getElementById('text-body');
+      const body = document.getElementById("text-body");
       body.replaceChildren();
 
-      text.paragraphs.forEach(paragraph => {
-        const element = document.createElement('p');
+      text.paragraphs.forEach((paragraph) => {
+        const element = document.createElement("p");
         element.textContent = paragraph;
         body.appendChild(element);
       });
 
-      document.getElementById('survey-link').href = 'survey.html';
-      document.getElementById('loading').hidden = true;
-      document.getElementById('reading').hidden = false;
-
+      document.getElementById("survey-link").href = "survey.html";
+      document.getElementById("loading").hidden = true;
+      document.getElementById("reading").hidden = false;
     } catch (error) {
       console.error(error);
       showError(error.message);
