@@ -1,7 +1,6 @@
-// Substitua pelos dados do seu projeto Supabase.
+// Dados públicos de conexão do Supabase. A Publishable key pode ficar no frontend.
+// Nunca coloque uma Secret key ou senha do banco neste arquivo.
 window.APP_CONFIG = {
-  SUPABASE_URL: "sb_publishable_PXt1zTUSbiARLLFjdkHXuQ_2TWJc45h",
-  SUPABASE_ANON_KEY: "sb_publishable_PXt1zTUSbiARLLFjdkHXuQ_2TWJc45h",
-  // Proteção simples de demonstração, não substitui autenticação real.
-  ADMIN_PASSWORD: "supabase123"
+  SUPABASE_URL: "https://SEU-PROJETO.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_SUA_CHAVE"
 };
