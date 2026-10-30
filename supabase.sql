@@ -1,3 +1,4 @@
+-- Tabela de respostas do experimento.
 create table if not exists public.experiment_responses (
   id bigint generated always as identity primary key,
   session_id text not null unique,
@@ -14,26 +15,34 @@ create table if not exists public.experiment_responses (
   changed_opinion integer check (changed_opinion between 0 and 100)
 );
 
+-- Ativa segurança em nível de linha.
 alter table public.experiment_responses enable row level security;
 
--- MVP de demonstração: permite envio anônimo e leitura para o painel.
--- Use apenas respostas sem dados pessoais. Para uma pesquisa formal,
--- restrinja a leitura administrativa com autenticação/Edge Function.
+-- Remove as políticas antigas do protótipo, se existirem.
 drop policy if exists "anonymous can submit experiment responses" on public.experiment_responses;
+drop policy if exists "anonymous can read experiment responses" on public.experiment_responses;
+drop policy if exists "anonymous can update experiment responses" on public.experiment_responses;
+drop policy if exists "authenticated can read experiment responses" on public.experiment_responses;
+
+-- Remove privilégios prévios e concede somente o necessário.
+revoke all on table public.experiment_responses from public, anon, authenticated;
+grant usage on schema public to anon, authenticated;
+
+-- Participantes anônimos podem inserir, mas não consultar, atualizar ou excluir.
+grant insert on table public.experiment_responses to anon;
 create policy "anonymous can submit experiment responses"
-on public.experiment_responses for insert to anon
+on public.experiment_responses
+for insert
+to anon
 with check (true);
 
-drop policy if exists "anonymous can read experiment responses" on public.experiment_responses;
-create policy "anonymous can read experiment responses"
-on public.experiment_responses for select to anon
+-- Usuários autenticados (conta do administrador) podem consultar os resultados.
+grant select on table public.experiment_responses to authenticated;
+create policy "authenticated can read experiment responses"
+on public.experiment_responses
+for select
+to authenticated
 using (true);
 
--- Habilite Realtime para esta tabela no painel Supabase:
--- Database -> Publications -> supabase_realtime -> adicione experiment_responses.
-
-
-drop policy if exists "anonymous can update experiment responses" on public.experiment_responses;
-create policy "anonymous can update experiment responses"
-on public.experiment_responses for update to anon
-using (true) with check (true);
+-- Não são criadas políticas de UPDATE ou DELETE.
+-- Para o Realtime: Database -> Publications -> supabase_realtime -> adicione experiment_responses.
