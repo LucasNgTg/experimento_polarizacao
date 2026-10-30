@@ -64,12 +64,17 @@
       .select('*')
       .order('created_at', { ascending: true });
 
+    rows = data || []
+
     if (error) {
-      console.error('Erro ao carregar resultados:', error);
-      $('aggregate-charts').textContent = 'Erro ao carregar os dados. Verifique as permissões da conta administrativa.';
+      console.error('Erro de autenticação:', error);
+
+      $('login-status').textContent =
+        `Erro: ${error.message}`;
+
+      $('login-btn').disabled = false;
       return;
     }
-    rows = data || [];
     render();
   }
 
