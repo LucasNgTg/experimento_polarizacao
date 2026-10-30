@@ -15,55 +15,17 @@
       <h1>Questionário</h1>
       <p>Considere o texto que você acabou de ler. Responda de acordo com sua percepção.</p>
     </header>
+
     <form id="survey" class="panel">
-      <div class="question"><label for="pre">1. Antes de ler o texto, em que medida você concordava que os algoritmos
-          das redes sociais podem contribuir para a polarização de opiniões?</label>
-        <div class="scale"><span>Discordo</span><span>Concordo</span></div><input id="pre" name="pre_position"
-          type="range" min="0" max="100" value="50"><output for="pre">50</output>
-      </div>
-      <div class="question"><label for="post">2. Agora, em que medida você concorda com essa afirmação?</label>
-        <div class="scale"><span>Discordo</span><span>Concordo</span></div><input id="post" name="post_position"
-          type="range" min="0" max="100" value="50"><output for="post">50</output>
-      </div>
-      <div class="question"><label for="conviction">3. Quão seguro você está de que sua opinião sobre o assunto está
-          correta?</label>
-        <div class="scale"><span>Nada seguro</span><span>Muito seguro</span></div><input id="conviction"
-          name="conviction" type="range" min="0" max="100" value="50"><output for="conviction">50</output>
-      </div>
-      <div class="question"><label for="emotion">4. Quanto o texto despertou emoções fortes em você?</label>
-        <div class="scale"><span>Nada</span><span>Muito</span></div><input id="emotion" name="emotion_intensity"
-          type="range" min="0" max="100" value="50"><output for="emotion">50</output>
-      </div>
-      <div class="question"><label for="anger">5. Quanto o texto provocou indignação ou raiva?</label>
-        <div class="scale"><span>Nada</span><span>Muito</span></div><input id="anger" name="anger" type="range" min="0"
-          max="100" value="50"><output for="anger">50</output>
-      </div>
-      <div class="question"><label for="talk">6. Quanto você estaria disposto a conversar respeitosamente com alguém que
-          discorda de você sobre esse assunto?</label>
-        <div class="scale"><span>Nada disposto</span><span>Muito disposto</span></div><input id="talk"
-          name="willingness_to_talk" type="range" min="0" max="100" value="50"><output for="talk">50</output>
-      </div>
-      <div class="question"><label for="competence">7. Em que medida você acredita que alguém que discorda de você
-          compreende menos esse assunto?</label>
-        <div class="scale"><span>De modo algum</span><span>Com certeza</span></div><input id="competence"
-          name="perceived_competence" type="range" min="0" max="100" value="50"><output for="competence">50</output>
-      </div>
-      <div class="question"><label for="more">8. Qual a probabilidade de você querer ler mais conteúdos semelhantes a
-          esse?</label>
-        <div class="scale"><span>Nenhuma</span><span>Muito alta</span></div><input id="more" name="would_read_more"
-          type="range" min="0" max="100" value="50"><output for="more">50</output>
-      </div>
-      <div class="question"><label for="changed">9. Quanto o texto mudou sua opinião inicial?</label>
-        <div class="scale"><span>Nada</span><span>Muito</span></div><input id="changed" name="changed_opinion"
-          type="range" min="0" max="100" value="0"><output for="changed">0</output>
-      </div>
+      <div id="questions"></div>
       <button class="button" type="submit">Enviar respostas</button>
       <p id="status" role="status" class="muted"></p>
     </form>
-    <footer>Não informe seu nome nem dados pessoais.</footer>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
+  <script src="content.js"></script>
   <script src="survey.js"></script>
 </body>
 

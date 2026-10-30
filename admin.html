@@ -1,46 +1,87 @@
 <!doctype html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Painel de resultados</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="container wide">
     <header>
       <p class="eyebrow">PAINEL DO APRESENTADOR</p>
       <h1>Resultados da dinâmica</h1>
-      <p>Visão geral das respostas recebidas.</p>
+      <p>Acompanhe a distribuição das respostas.</p>
     </header>
+
     <section id="login" class="panel">
-      <form id="login-form"><label for="email">E-mail administrativo</label><input id="email" type="email"
-          autocomplete="username" required><label for="password">Senha</label><input id="password" type="password"
-          autocomplete="current-password" required><button id="login-btn" class="button" type="submit">Entrar</button>
+      <form id="login-form">
+        <label for="email">E-mail administrativo</label>
+        <input id="email" type="email" autocomplete="username" required>
+
+        <label for="password">Senha</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+
+        <button id="login-btn" class="button" type="submit">Entrar</button>
         <p id="login-status" class="muted" role="status"></p>
       </form>
     </section>
+
     <section id="dashboard" hidden>
-      <div class="dashboard-actions"><button id="logout-btn" class="button" type="button">Sair</button></div>
+      <div class="dashboard-actions">
+        <button id="logout-btn" class="button" type="button">Sair</button>
+      </div>
+
       <div class="stats" id="stats"></div>
-      <div class="panel">
-        <h2>Distribuição das respostas</h2>
-        <div id="aggregate-charts"></div>
-      </div>
-      <div class="panel reveal">
-        <h2>Comparação detalhada</h2>
-        <p>Esta seção deve ser aberta somente depois da discussão dos resultados agregados.</p><button id="reveal"
-          class="button">Revelar comparação entre condições</button>
-        <div id="split-results" hidden></div>
-      </div>
+
+      <section class="panel results-panel">
+        <div class="stage-heading">
+          <div>
+            <p class="eyebrow" id="stage-kicker">VISÃO 1</p>
+            <h2 id="stage-title">Respostas</h2>
+          </div>
+          <span id="stage-status" class="stage-status">1 de 2</span>
+        </div>
+
+        <div class="question-navigation">
+          <button id="stage-prev" class="button button-secondary" type="button">Voltar</button>
+          <span id="stage-page" aria-live="polite">1 de 2</span>
+          <button id="stage-next" class="button" type="button">Próxima</button>
+        </div>
+
+        <section id="aggregate-stage">
+          <div id="aggregate-grid" class="aggregate-grid"></div>
+        </section>
+
+        <section id="detail-stage" hidden>
+          <div class="detail-layout">
+            <section class="aggregate-panel">
+              <h3>Distribuição</h3>
+              <div id="aggregate-detail-grid" class="aggregate-grid compact-grid"></div>
+            </section>
+
+            <div class="group-panels">
+              <section class="condition-panel">
+                <h3>Painel 1</h3>
+                <div id="group-a-grid" class="group-chart-grid"></div>
+              </section>
+
+              <section class="condition-panel">
+                <h3>Painel 2</h3>
+                <div id="group-b-grid" class="group-chart-grid"></div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </section>
     </section>
+
     <footer>Atualização automática quando o Realtime estiver habilitado no Supabase.</footer>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
+  <script src="content.js"></script>
   <script src="admin.js"></script>
 </body>
-
 </html>
