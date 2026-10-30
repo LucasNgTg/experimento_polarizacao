@@ -46,3 +46,75 @@ using (true);
 
 -- Não são criadas políticas de UPDATE ou DELETE.
 -- Para o Realtime: Database -> Publications -> supabase_realtime -> adicione experiment_responses.
+
+-- Guarda a última condição distribuída.
+create table if not exists public.experiment_assignment_state (
+  singleton boolean primary key default true check (singleton),
+  last_condition text check (last_condition in ('A', 'B'))
+);
+
+-- Inicializa a sequência: o primeiro participante receberá A.
+insert into public.experiment_assignment_state (singleton, last_condition)
+values (true, null)
+on conflict (singleton) do nothing;
+
+-- Guarda a condição atribuída a cada sessão.
+create table if not exists public.experiment_assignments (
+  session_id text primary key,
+  condition_code text not null check (condition_code in ('A', 'B')),
+  created_at timestamptz not null default now()
+);
+
+-- Impede acesso direto às tabelas pelos participantes.
+alter table public.experiment_assignment_state enable row level security;
+alter table public.experiment_assignments enable row level security;
+
+revoke all on public.experiment_assignment_state from public, anon, authenticated;
+revoke all on public.experiment_assignments from public, anon, authenticated;
+
+-- A função faz a atribuição de maneira atômica.
+create or replace function public.assign_experiment_condition(p_session_id text)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  assigned_condition text;
+begin
+  -- Bloqueia a linha de controle para serializar as atribuições.
+  perform 1
+  from public.experiment_assignment_state
+  where singleton = true
+  for update;
+
+  -- Se esta sessão já recebeu uma condição, reutiliza-a.
+  select condition_code
+  into assigned_condition
+  from public.experiment_assignments
+  where session_id = p_session_id;
+
+  if found then
+    return assigned_condition;
+  end if;
+
+  -- Alterna a condição globalmente.
+  update public.experiment_assignment_state
+  set last_condition = case
+    when last_condition = 'A' then 'B'
+    else 'A'
+  end
+  where singleton = true
+  returning last_condition into assigned_condition;
+
+  -- Registra a atribuição para que a sessão possa recuperá-la.
+  insert into public.experiment_assignments (session_id, condition_code)
+  values (p_session_id, assigned_condition);
+
+  return assigned_condition;
+end;
+$$;
+
+-- Participantes anônimos podem executar a função, mas não acessar as tabelas.
+revoke all on function public.assign_experiment_condition(text) from public;
+grant execute on function public.assign_experiment_condition(text) to anon;

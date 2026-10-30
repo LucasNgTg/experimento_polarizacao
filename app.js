@@ -1,50 +1,96 @@
-const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.APP_CONFIG;
+(() => {
+  const cfg = window.APP_CONFIG;
+  const client = supabase.createClient(
+    cfg.SUPABASE_URL,
+    cfg.SUPABASE_ANON_KEY
+  );
 
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+  const sessionKey = 'experiment_session_id';
+  const conditionKey = 'experiment_condition_code';
 
-// Alterna entre as condições A e B.
-function assignCondition() {
-  const lastCondition = localStorage.getItem("lastCondition");
+  function getSessionId() {
+    let id = sessionStorage.getItem(sessionKey);
 
-  const condition = lastCondition === "A" ? "B" : "A";
+    if (!id) {
+      id = crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-  localStorage.setItem("lastCondition", condition);
+      sessionStorage.setItem(sessionKey, id);
+    }
 
-  return condition;
-}
-
-// Recupera ou cria a sessão do participante.
-function getSession() {
-  let sessionId = localStorage.getItem("sessionId");
-  let condition = localStorage.getItem("condition");
-
-  // Cria uma nova sessão caso ainda não exista.
-  if (!sessionId || !condition) {
-    sessionId = crypto.randomUUID();
-    condition = assignCondition();
-
-    localStorage.setItem("sessionId", sessionId);
-    localStorage.setItem("condition", condition);
+    return id;
   }
 
-  return { sessionId, condition };
-}
+  async function getCondition(sessionId) {
+    // Consulta o banco mesmo se já houver uma condição armazenada.
+    // O Supabase retorna a condição previamente atribuída à sessão,
+    // sem avançar a sequência.
+    const { data, error } = await client.rpc(
+      'assign_experiment_condition',
+      { p_session_id: sessionId }
+    );
 
-// Obtém a sessão atual.
-const { sessionId, condition } = getSession();
+    if (error) {
+      console.error('Erro ao atribuir condição:', error);
+      throw new Error('Não foi possível determinar a versão do texto.');
+    }
 
-// Carrega o texto correspondente à condição atribuída.
-const textContainer = document.querySelector("#experiment-text");
+    if (data !== 'A' && data !== 'B') {
+      throw new Error('O Supabase retornou uma condição inválida.');
+    }
 
-if (textContainer) {
-  textContainer.textContent = window.EXPERIMENT_CONTENT[condition];
-}
+    sessionStorage.setItem(conditionKey, data);
 
-// Disponibiliza os dados da sessão para a página da pesquisa.
-window.EXPERIMENT_SESSION = {
-  sessionId,
-  condition
-};
+    return data;
+  }
+
+  function showError(message) {
+    const loading = document.getElementById('loading');
+    loading.textContent = message;
+  }
+
+  async function init() {
+    if (
+      !cfg.SUPABASE_URL ||
+      cfg.SUPABASE_URL.includes('SEU-PROJETO') ||
+      !cfg.SUPABASE_ANON_KEY ||
+      cfg.SUPABASE_ANON_KEY.includes('SUA_CHAVE')
+    ) {
+      showError(
+        'O sistema ainda não foi configurado com as credenciais do Supabase.'
+      );
+      return;
+    }
+
+    try {
+      const sessionId = getSessionId();
+      const condition = await getCondition(sessionId);
+
+      const text = condition === 'A'
+        ? EXPERIMENT_TEXTS.versionA
+        : EXPERIMENT_TEXTS.versionB;
+
+      document.getElementById('text-title').textContent = text.title;
+
+      const body = document.getElementById('text-body');
+      body.replaceChildren();
+
+      text.paragraphs.forEach(paragraph => {
+        const element = document.createElement('p');
+        element.textContent = paragraph;
+        body.appendChild(element);
+      });
+
+      document.getElementById('survey-link').href = 'survey.html';
+      document.getElementById('loading').hidden = true;
+      document.getElementById('reading').hidden = false;
+
+    } catch (error) {
+      console.error(error);
+      showError(error.message);
+    }
+  }
+
+  init();
+})();
